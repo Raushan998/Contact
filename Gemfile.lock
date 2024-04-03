@@ -181,7 +181,7 @@ GEM
     psych (5.1.2)
       stringio
     public_suffix (5.0.5)
-    puma (6.4.2)
+    puma (4.3.7)
       nio4r (~> 2.0)
     racc (1.7.3)
     rack (3.0.10)
@@ -297,7 +297,7 @@ DEPENDENCIES
   importmap-rails
   jbuilder
   pg (~> 1.1)
-  puma (>= 5.0)
+  puma (= 4.3.7)
   rails (~> 7.1.3, >= 7.1.3.2)
   redis (>= 4.0.1)
   selenium-webdriver
