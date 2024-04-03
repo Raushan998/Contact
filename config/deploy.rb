@@ -3,7 +3,7 @@ lock "~> 3.18.1"
 
 set :application, 'contact'
 set :repo_url, 'git@github.com:Raushan998/Contact.git'
-set :branch, :master
+set :branch, :main
 set :deploy_to, '/home/deploy/contact'
 set :pty, true
 set :linked_files, %w{config/database.yml config/application.yml}
