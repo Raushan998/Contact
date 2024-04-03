@@ -22,13 +22,12 @@ set :puma_error_log, "#{shared_path}/log/puma_error.log"
 set :puma_role, :app
 set :puma_env, fetch(:rack_env, fetch(:rails_env, 'production'))
 set :puma_threads, [0, 8]
+set :puma_daemonize, false
 set :puma_workers, 2 # Adjust the number of Puma workers based on your server's CPU cores
 set :puma_worker_timeout, nil
 set :puma_init_active_record, true
 set :puma_preload_app, false # Set to true if using preload_app!
 
-# Set the path to the Puma executable directly
-set :puma_cmd, "#{fetch(:bundle_cmd, 'bundle')} exec puma"
 # Default branch is :master
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
 
