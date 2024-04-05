@@ -26,7 +26,18 @@ set :puma_workers, 2 # Adjust the number of Puma workers based on your server's 
 set :puma_worker_timeout, nil
 set :puma_init_active_record, true
 set :puma_preload_app, false # Set to true if using preload_app!
-set :puma_cmd, "#{rvm_bin_path}/rvm ruby-3.3.0 do bundle exec puma -C #{shared_path}/puma_contact_production.rb"
+set :puma_cmd, "#{fetch(:rvm_bin_path)}/rvm ruby-3.3.0 do bundle exec puma -C #{shared_path}/puma_contact_production.rb"
+
+namespace :rvm do
+  desc 'Print RVM environment'
+    task :env do
+      on roles(:app) do
+        within current_path do
+          execute :rvm, 'env'
+        end
+      end
+  end
+end
 
 namespace :puma do
   desc 'Start Puma'
