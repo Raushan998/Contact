@@ -12,63 +12,54 @@ set :keep_releases, 5
 set :rvm_type, :user
 set :rvm_ruby_version, 'ruby-3.3.0'
 
-set :puma_rackup, -> { File.join(current_path, 'config.ru') }
-set :puma_state, "#{shared_path}/tmp/pids/puma.state"
-set :puma_pid, "#{shared_path}/tmp/pids/puma.pid"
-set :puma_bind, "unix://#{shared_path}/tmp/sockets/puma.sock"
-set :puma_conf, "#{shared_path}/puma.rb"
-set :puma_access_log, "#{shared_path}/log/puma_access.log"
-set :puma_error_log, "#{shared_path}/log/puma_error.log"
-set :puma_role, :app
-set :puma_env, fetch(:rack_env, fetch(:rails_env, 'production'))
-set :puma_threads, [0, 8]
-set :puma_workers, 2 # Adjust the number of Puma workers based on your server's CPU cores
-set :puma_worker_timeout, nil
-set :puma_init_active_record, true
-set :puma_preload_app, false # Set to true if using preload_app!
+set :puma_service_unit_name, 'contact_puma_production.service'
 set :puma_cmd, "#{fetch(:rvm_bin_path)}/rvm ruby-3.3.0 do bundle exec puma -C #{shared_path}/puma.rb"
-
-namespace :rvm do
-  desc 'Print RVM environment'
-    task :env do
-      on roles(:app) do
-        within current_path do
-          execute :rvm, 'env'
-        end
-      end
-  end
-end
 
 namespace :puma do
   desc 'Start Puma'
-    task :start do
-        on roles(:app) do
-        within current_path do
-            execute :sudo, :systemctl, :start, 'contact_puma_production.service'
-        end
+  task :start do
+    on roles(:app) do
+      within release_path do
+        invoke 'systemctl:start_puma'
+      end
     end
   end
 
   desc 'Stop Puma'
-    task :stop do
-      on roles(:app) do
-        within current_path do
-            execute :sudo, :systemctl, :stop, 'contact_puma_production.service'
-        end
+  task :stop do
+    on roles(:app) do
+      within release_path do
+        invoke 'systemctl:stop_puma'
+      end
     end
   end
 
   desc 'Restart Puma'
-    task :restart do
-      on roles(:app) do
-        within current_path do
-          execute :sudo, :systemctl, :restart, 'contact_puma_production.service'
-        end
+  task :restart do
+    on roles(:app) do
+      within release_path do
+        invoke 'systemctl:restart_puma'
       end
-   end
+    end
+  end
 end
-  
+
+namespace :systemctl do
+  task :start_puma do
+    execute :sudo, '/bin/systemctl', :start, fetch(:puma_service_unit_name)
+  end
+
+  task :stop_puma do
+    execute :sudo, '/bin/systemctl', :stop, fetch(:puma_service_unit_name)
+  end
+
+  task :restart_puma do
+    execute :sudo, '/bin/systemctl', :restart, fetch(:puma_service_unit_name)
+  end
+end
+
 after 'deploy:publishing', 'puma:restart'
+
 # Default branch is :master
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
 
